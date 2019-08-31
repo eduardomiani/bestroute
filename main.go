@@ -10,7 +10,6 @@ import (
 )
 
 var (
-	parsedRoutes   map[string][][]string
 	interfac, port string
 )
 
@@ -51,7 +50,7 @@ func main() {
 			parts := strings.Split(input, "-")
 			results := findBestRoute(parts[0], parts[1], 1)
 			if len(results) > 0 {
-				fmt.Printf("\nBest route: %s > $%d\n", results[0].Plan, results[0].Price)
+				fmt.Printf("\nBest route: %s > $%d\n", results[0].Route, results[0].Price)
 			} else {
 				fmt.Printf("\nNo route was found. Please try another route\n")
 			}

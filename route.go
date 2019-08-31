@@ -6,13 +6,15 @@ import (
 	"strings"
 )
 
-// Route represents a found Route
-type Route struct {
-	Plan  string
+var parsedRoutes map[string][][]string
+
+// RouteResp represents a found Route
+type RouteResp struct {
+	Route string
 	Price int
 }
 
-func findBestRoute(from, to string, limit int) []Route {
+func findBestRoute(from, to string, limit int) []RouteResp {
 	rotas := make([]string, 0)
 	rotas = append(rotas, from)
 	rotas = find(rotas, to)
@@ -20,42 +22,42 @@ func findBestRoute(from, to string, limit int) []Route {
 }
 
 // find sweeps the file searching all possible routes, given a source route and a destination
-func find(rotas []string, f string) []string {
-	var dones int
-	cop := make([]string, 0, len(rotas))
-	for i, v := range rotas {
-		if strings.HasPrefix(v, "done-") {
-			cop = append(cop, v)
-			dones++
-			continue
-		}
-		parts := strings.Split(v, "-")
-		var o string
+func find(routes []string, to string) []string {
+	var done int
+	routesAux := make([]string, 0, len(routes))
+	for i, r := range routes {
+		parts := strings.Split(r, "-")
+		var from string
 		if len(parts) <= 1 {
-			o = parts[len(parts)-1]
+			from = parts[len(parts)-1]
 		} else {
-			o = parts[len(parts)-2]
-		}
-		for _, rota := range parsedRoutes[o] {
-			nova := rotas[i] + "-" + rota[1] + "-" + rota[2]
-			if rota[1] == f || strings.Contains(rotas[i], rota[1]) {
-				nova = "done-" + nova
+			from = parts[len(parts)-2]
+			if from == to {
+				routesAux = append(routesAux, r)
+				done++
+				continue
 			}
-			cop = append(cop, nova)
+		}
+		for _, route := range parsedRoutes[from] {
+			if strings.Contains(routes[i], route[1]) {
+				continue
+			}
+			newRoute := routes[i] + "-" + route[1] + "-" + route[2]
+			routesAux = append(routesAux, newRoute)
 		}
 	}
-	if dones < len(cop) {
-		return find(cop, f)
+	if done < len(routesAux) {
+		return find(routesAux, to)
 	} else {
-		return cop
+		return routesAux
 	}
 }
 
 // parseResults handles the found routes and returns a Route array
-func parseResults(routes []string, limit int) []Route {
-	results := make([]Route, 0, len(routes))
+func parseResults(routes []string, limit int) []RouteResp {
+	results := make([]RouteResp, 0, len(routes))
 	for _, r := range routes {
-		parts := strings.Split(r, "-")[1:]
+		parts := strings.Split(r, "-")
 		var (
 			routeString string
 			total       int
@@ -71,8 +73,8 @@ func parseResults(routes []string, limit int) []Route {
 				}
 			}
 		}
-		route := Route{
-			Plan:  routeString,
+		route := RouteResp{
+			Route: routeString,
 			Price: total,
 		}
 		results = append(results, route)
@@ -86,7 +88,7 @@ func parseResults(routes []string, limit int) []Route {
 		if results[i].Price > results[j].Price {
 			return false
 		}
-		return len(results[i].Plan) < len(results[j].Plan)
+		return len(results[i].Route) < len(results[j].Route)
 	})
 	if limit > len(results) {
 		limit = len(results)

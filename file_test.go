@@ -103,6 +103,8 @@ func TestParseFileValidation(t *testing.T) {
 		}
 		if err != nil && !strings.Contains(err.Error(), tc.ErrorMsg) {
 			t.Errorf("Unexpected error '%s' at testCase #%d, expected something like '%s'", err.Error(), i, tc.ErrorMsg)
+			continue
 		}
+		t.Logf(">>> OK!")
 	}
 }
