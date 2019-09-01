@@ -6,7 +6,7 @@ Programa desenvolvido com o desafio de encontrar a melhor rota para um viajante,
 O programa foi desenvolvido na linguagem [Go](https://golang.org/), devido a produtividade e os recursos disponibilizados pelas bibliotecas nativas da linguagem.
 Para a interface rest, não foi utilizado nenhum framework ou biblioteca externa, apenas as bibliotecas nativas.
 
-Os arquivos estão na seguinte estrutura:
+Os arquivos estão organizados na seguinte estrutura:
 
 * /rest - *pacote com os arquivos relacionados a interface rest*
 * /route - *pacote com os arquivos core da aplicação, tratamento das rotas e manipulação do arquivo*
