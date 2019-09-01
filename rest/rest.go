@@ -3,6 +3,7 @@ package rest
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -17,6 +18,7 @@ type ErrorResp struct {
 
 // handlerResponse generic response function to any request
 func handlerResponse(objResp interface{}, status int, w http.ResponseWriter) {
+	log.Printf("Response status: %v\n%#v\n", status, objResp)
 	w.WriteHeader(status)
 	json.NewEncoder(w).Encode(objResp)
 }
@@ -109,6 +111,7 @@ func createNewRouteHandler(w http.ResponseWriter, r *http.Request) {
 	if !created {
 		respStatus = http.StatusOK
 	}
+	log.Printf("Response status: %v\n", respStatus)
 	w.WriteHeader(respStatus)
 }
 

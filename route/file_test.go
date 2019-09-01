@@ -3,20 +3,18 @@ package route
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
-	"os"
 	"strings"
 	"testing"
 )
 
 func TestParseFile(t *testing.T) {
 	input := `GRU,BRC,10
-	BRC,SCL,5
-	GRU,CDG,75
-	GRU,SCL,20
-	GRU,ORL,56
-	ORL,CDG,5
-	SCL,ORL,20`
+BRC,SCL,5
+GRU,CDG,75
+GRU,SCL,20
+GRU,ORL,56
+ORL,CDG,5
+SCL,ORL,20`
 	expectedParsed := map[string][][]string{
 		"GRU": [][]string{
 			[]string{"GRU", "BRC", "10"},
@@ -113,61 +111,55 @@ func TestParseFileValidation(t *testing.T) {
 
 func TestAddRoute(t *testing.T) {
 	File = "sample.csv"
-	aux := File + ".aux"
-	defer func() {
-		File = ""
-		os.Remove(aux)
-	}()
-	created, err := addRoute(&Route{
-		From:  "ABC",
-		To:    "DEF",
-		Price: 50,
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !created {
-		t.Errorf("Unexpected created false, expected true")
-	}
-	content, err := ioutil.ReadFile(aux)
-	if err != nil {
-		t.Fatal(err)
-	}
-	expected := `GRU,BRC,10
+
+	testCases := []struct {
+		Name            string
+		Route           Route
+		ExpectedCreated bool
+		ExpectedContent string
+	}{
+		{
+			Name: "Add new route",
+			Route: Route{
+				From:  "ABC",
+				To:    "DEF",
+				Price: 50,
+			},
+			ExpectedCreated: true,
+			ExpectedContent: `GRU,BRC,10
 BRC,SCL,5
 ABC,DEF,50
-`
-	if string(content) != expected {
-		t.Errorf("Unexpected file:\n%s\nexpected:\n%s", content, expected)
-	}
-}
-
-func TestUpdateRoute(t *testing.T) {
-	File = "sample.csv"
-	aux := File + ".aux"
-	defer func() {
-		File = ""
-		os.Remove(aux)
-	}()
-	created, err := addRoute(&Route{
-		From:  "GRU",
-		To:    "BRC",
-		Price: 35,
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if created {
-		t.Errorf("Unexpected created true, expected false, because the route was updated")
-	}
-	content, err := ioutil.ReadFile(aux)
-	if err != nil {
-		t.Fatal(err)
-	}
-	expected := `GRU,BRC,35
+`,
+		},
+		{
+			Name: "Update existent route",
+			Route: Route{
+				From:  "GRU",
+				To:    "BRC",
+				Price: 35,
+			},
+			ExpectedCreated: false,
+			ExpectedContent: `GRU,BRC,35
 BRC,SCL,5
-`
-	if string(content) != expected {
-		t.Errorf("Unexpected file:\n%s\nexpected:\n%s", content, expected)
+`,
+		},
+	}
+
+	for i, tc := range testCases {
+		t.Logf("Running testcase #%d: %s...", i, tc.Name)
+		route := testCases[i].Route
+		newContent, created, err := addRoute(&route, false)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if tc.ExpectedCreated != created {
+			t.Errorf("Unexpected created '%v' at testcase #%d, expected '%v'", created, i, tc.ExpectedCreated)
+			continue
+		}
+		if string(newContent) != tc.ExpectedContent {
+			t.Errorf("Unexpected file at testcase #%d:\n%s\nexpected:\n%s", i, newContent, tc.ExpectedContent)
+			continue
+		}
+		t.Logf(">>> OK!")
 	}
 }

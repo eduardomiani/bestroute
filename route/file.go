@@ -1,6 +1,7 @@
 package route
 
 import (
+	"bytes"
 	"encoding/csv"
 	"fmt"
 	"io"
@@ -57,11 +58,8 @@ func ParseFile(file io.Reader, force bool) (map[string][][]string, error) {
 // If this route already exists, it is updated
 func Add(r *Route) (bool, error) {
 	log.Printf("Adding route %s-%s:%d\n", r.From, r.To, r.Price)
-	created, err := addRoute(r)
+	_, created, err := addRoute(r, true)
 	if err != nil {
-		return false, err
-	}
-	if err = os.Rename(File+".aux", File); err != nil {
 		return false, err
 	}
 
@@ -74,16 +72,16 @@ func Add(r *Route) (bool, error) {
 	return created, nil
 }
 
-func addRoute(r *Route) (bool, error) {
+func addRoute(r *Route, fileReplace bool) ([]byte, bool, error) {
 	file, err := os.OpenFile(File, os.O_RDWR|os.O_CREATE, 0755)
 	if err != nil {
-		return false, err
+		return nil, false, err
 	}
 	defer file.Close()
 	reader := csv.NewReader(file)
 	lines, err := reader.ReadAll()
 	if err != nil {
-		return false, err
+		return nil, false, err
 	}
 
 	var (
@@ -107,15 +105,17 @@ func addRoute(r *Route) (bool, error) {
 		lines = append(lines, []string{from, to, price})
 	}
 
-	newFile, err := os.Create(File + ".aux")
-	if err != nil {
-		return false, err
-	}
-	defer newFile.Close()
+	newFile := bytes.NewBufferString("")
 	writer := csv.NewWriter(newFile)
 	if err = writer.WriteAll(lines); err != nil {
-		return false, err
+		return nil, false, err
+	}
+	newContent := newFile.Bytes()
+	if fileReplace {
+		if _, err = file.WriteAt(newContent, 0); err != nil {
+			return nil, false, err
+		}
 	}
 	writer.Flush()
-	return !updated, nil
+	return newContent, !updated, nil
 }
