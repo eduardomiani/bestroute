@@ -67,8 +67,11 @@ Opcionalmente, a porta do servidor pode ser informada:
 ```sh
 $ bestroute -it rest -p 8000 input-file.txt
 ```
+*A porta padrão da interface rest é 8080*
 
-Rest endpoints:
+#### Rest endpoints:
+
+Endpoint: http://localhost:8080/api/v1/routes
 
 **GET: Procura e retorna as melhores rotas, dado origem e destino**
 
