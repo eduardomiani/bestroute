@@ -38,7 +38,7 @@ Com isso, o binário estará disponível na raiz do projeto.
 
 ### Alternativa
 
-Caso não queira instalar e configurar o Go, os binários foram disponibilizados para download nos links abaixo:
+Caso não queira instalar e configurar o Go, os binários deste desafio *(bestroute)* foram disponibilizados para download nos links abaixo:
 
    - [Distribuição Linux](https://drive.google.com/open?id=1LrinL8rgqwXEBVC_ZBR72veHEHhXoqY3)
    - [Distribuição Mac OS](https://drive.google.com/open?id=1B7YbaVl5d1YKvBviKyA-AgZgl5SeNNyk)
@@ -70,12 +70,46 @@ $ bestroute -it rest -p 8000 input-file.txt
 
 Rest endpoints:
 
-```
-GET /api/v1/routes?from={{origem}}&to={{destino}} // Procura a rota mais barata
-opcional: &limit={{quantidade}} // Exibe a quantidade de rotas pedida, se disponível, ordenando por preço e distância
+**GET: Procura e retorna as melhores rotas, dado origem e destino**
 
-POST /api/v1/routes // Adiciona uma nova rota ao arquivo ou atualiza o preço caso já exista
+Parâmetros de URL:
+* from - *origem da viagem*
+* to - *destino da viagem*
+* limit - *opcional: quantidade de resultados a retornar*
+
+Exemplo:
+
 ```
+GET /api/v1/routes
+      ?from=GRU
+      &to=CDG
+      &limit
+```
+
+**POST: Adiciona uma nova rota ao arquivo ou atualiza o preço caso  a rota já exista**
+
+O Payload deve ser enviado em uma estrutura no formato json com os seguintes campos:
+
+* from *string*
+* to *string*
+* price *int*
+
+Exemplo:
+
+```
+POST /api/v1/routes
+
+{
+    "from": "ABC",
+    "to": "DEF",
+    "price": 70
+}
+```
+
+Em caso de sucesso da requisição POST, dois status de resposta diferentes podem ser retornados:
+
+* 201 - *Caso a nova rota tenha sido criada com sucesso*
+* 200 - *Caso a rota já exista no arquivo, ela será atualizada*
 
 ## Testes Unitários
 
