@@ -2,6 +2,7 @@ package rest
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -72,6 +73,55 @@ func findBestRouteHandler(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
+// createNewRouteHandler creates a new route into the routes file
+// If the route already exists, it is updated
 func createNewRouteHandler(w http.ResponseWriter, r *http.Request) {
+	var rt route.Route
+	if err := json.NewDecoder(r.Body).Decode(&rt); err != nil {
+		handlerResponse(
+			ErrorResp{Error: "Invalid payload", Detail: err.Error()},
+			http.StatusBadRequest,
+			w,
+		)
+		return
+	}
 
+	if err := validateRoute(&rt); err != nil {
+		handlerResponse(
+			ErrorResp{Error: "Invalid payload", Detail: err.Error()},
+			http.StatusBadRequest,
+			w,
+		)
+		return
+	}
+
+	created, err := route.Add(&rt)
+	if err != nil {
+		handlerResponse(
+			ErrorResp{Error: err.Error()},
+			http.StatusInternalServerError,
+			w,
+		)
+		return
+	}
+
+	respStatus := http.StatusCreated
+	if !created {
+		respStatus = http.StatusOK
+	}
+	w.WriteHeader(respStatus)
+}
+
+// validateRoute validates a route
+func validateRoute(r *route.Route) error {
+	if r.From == "" {
+		return fmt.Errorf("'From' is required")
+	}
+	if r.To == "" {
+		return fmt.Errorf("'To' is required")
+	}
+	if r.Price <= 0 {
+		return fmt.Errorf("Invalid price")
+	}
+	return nil
 }

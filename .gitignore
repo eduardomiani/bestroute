@@ -1,4 +1,5 @@
 *
 !*.go
 !/route/
+!/route/sample.csv
 !/rest/

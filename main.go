@@ -30,16 +30,19 @@ func main() {
 		os.Exit(1)
 	}
 
-	file, err := os.Open(args[len(args)-1])
+	filename := args[len(args)-1]
+	file, err := os.Open(filename)
 	if err != nil {
 		log.Fatal(err)
 		os.Exit(1)
 	}
+	defer file.Close()
 	_, err = route.ParseFile(file, false)
 	if err != nil {
 		log.Fatal(err)
 		os.Exit(1)
 	}
+	route.File = filename
 
 	if interfac == "rest" {
 		restInterface()
@@ -51,7 +54,7 @@ func main() {
 // restInterface provides the rest interface
 func restInterface() {
 	http.HandleFunc("/api/v1/routes", rest.BestRouteHandler)
-	fmt.Printf("Starting server on port %s...", port)
+	log.Printf("Starting server on port %s...\n", port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
 }
 

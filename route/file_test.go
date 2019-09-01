@@ -3,6 +3,8 @@ package route
 import (
 	"bytes"
 	"fmt"
+	"io/ioutil"
+	"os"
 	"strings"
 	"testing"
 )
@@ -106,5 +108,66 @@ func TestParseFileValidation(t *testing.T) {
 			continue
 		}
 		t.Logf(">>> OK!")
+	}
+}
+
+func TestAddRoute(t *testing.T) {
+	File = "sample.csv"
+	aux := File + ".aux"
+	defer func() {
+		File = ""
+		os.Remove(aux)
+	}()
+	created, err := addRoute(&Route{
+		From:  "ABC",
+		To:    "DEF",
+		Price: 50,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !created {
+		t.Errorf("Unexpected created false, expected true")
+	}
+	content, err := ioutil.ReadFile(aux)
+	if err != nil {
+		t.Fatal(err)
+	}
+	expected := `GRU,BRC,10
+BRC,SCL,5
+ABC,DEF,50
+`
+	if string(content) != expected {
+		t.Errorf("Unexpected file:\n%s\nexpected:\n%s", content, expected)
+	}
+}
+
+func TestUpdateRoute(t *testing.T) {
+	File = "sample.csv"
+	aux := File + ".aux"
+	defer func() {
+		File = ""
+		os.Remove(aux)
+	}()
+	created, err := addRoute(&Route{
+		From:  "GRU",
+		To:    "BRC",
+		Price: 35,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if created {
+		t.Errorf("Unexpected created true, expected false, because the route was updated")
+	}
+	content, err := ioutil.ReadFile(aux)
+	if err != nil {
+		t.Fatal(err)
+	}
+	expected := `GRU,BRC,35
+BRC,SCL,5
+`
+	if string(content) != expected {
+		t.Errorf("Unexpected file:\n%s\nexpected:\n%s", content, expected)
 	}
 }

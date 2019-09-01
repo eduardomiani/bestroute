@@ -9,6 +9,13 @@ import (
 
 var parsedRoutes map[string][][]string
 
+// Route represents a single route into the program
+type Route struct {
+	From  string `json:"from"`
+	To    string `json:"to"`
+	Price int    `json:"price"`
+}
+
 // RouteResp represents a found Route
 type RouteResp struct {
 	Route string `json:"route"`
@@ -16,7 +23,9 @@ type RouteResp struct {
 }
 
 func FindBestRoute(from, to string, limit int) []RouteResp {
-	log.Printf(">>> ParsedRoutesSize: %d - params %s-%s-%d", len(parsedRoutes), from, to, limit)
+	from = strings.ToUpper(from)
+	to = strings.ToUpper(to)
+	log.Printf("Searching for route %s-%s...\n", from, to)
 	rotas := make([]string, 0)
 	rotas = append(rotas, from)
 	rotas = find(rotas, to)
