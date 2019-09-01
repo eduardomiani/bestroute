@@ -1,5 +1,7 @@
 # Best Route
 
+[![Build Status](https://travis-ci.org/eduardomiani/bestroute.svg?branch=master)](https://travis-ci.org/eduardomiani/bestroute)
+
 Programa desenvolvido com o desafio de encontrar a melhor rota para um viajante, dado um arquivo de rotas cadastradas.
 O programa foi desenvolvido na linguagem [Go](https://golang.org/), devido a produtividade e os recursos disponibilizados pelas bibliotecas nativas da linguagem.
 Para a interface rest, não foi utilizado nenhum framework ou biblioteca externa, apenas as bibliotecas nativas.
