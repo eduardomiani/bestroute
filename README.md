@@ -42,7 +42,7 @@ Caso não queira instalar e configurar o Go, os binários foram disponibilizados
 
    - [Distribuição Linux](https://drive.google.com/open?id=1LrinL8rgqwXEBVC_ZBR72veHEHhXoqY3)
    - [Distribuição Mac OS](https://drive.google.com/open?id=1B7YbaVl5d1YKvBviKyA-AgZgl5SeNNyk)
-   - [Distribuição Windows](https://google.com)
+   - [Distribuição Windows](https://drive.google.com/open?id=1Vc0CL1vSvF0n6uW-AHe8PvF1nt3S5zkj)
 
 ## Execução
 
