@@ -114,7 +114,7 @@ func TestFindBestRoute(t *testing.T) {
 
 	for i, tc := range testCases {
 		t.Logf("Running testCase #%d: %s...", i, tc.Name)
-		if _, err := file.Parse(bytes.NewBufferString(tc.File), true); err != nil {
+		if _, err := ParseFile(bytes.NewBufferString(tc.File), true); err != nil {
 			t.Fatal(err)
 		}
 		result := FindBestRoute(tc.From, tc.To, tc.Limit)

@@ -33,7 +33,7 @@ func TestParseFile(t *testing.T) {
 		},
 	}
 
-	resultParsed, err := parseFile(bytes.NewBufferString(input), false)
+	resultParsed, err := ParseFile(bytes.NewBufferString(input), false)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -92,7 +92,7 @@ func TestParseFileValidation(t *testing.T) {
 
 	for i, tc := range testCases {
 		t.Logf("Running testCase '%s'...", tc.Name)
-		_, err := parseFile(bytes.NewBufferString(tc.Input), true)
+		_, err := ParseFile(bytes.NewBufferString(tc.Input), true)
 		if err != nil && tc.ErrorMsg == "" {
 			t.Errorf("Unexpected non <nil> error at testCase #%d: %v", i, err)
 			continue
