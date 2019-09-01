@@ -4,3 +4,4 @@
 !/route/sample.csv
 !/rest/
 !*.md
+!*.yml
