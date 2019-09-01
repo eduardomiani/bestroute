@@ -5,8 +5,12 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"strings"
+
+	"github.com/eduardomiani/bestroute/rest"
+	"github.com/eduardomiani/bestroute/route"
 )
 
 var (
@@ -15,7 +19,7 @@ var (
 
 func init() {
 	flag.StringVar(&interfac, "it", "console", "Interface: type 'rest' to run a web app")
-	flag.StringVar(&interfac, "p", "8080", "port")
+	flag.StringVar(&port, "p", "8080", "port")
 }
 
 func main() {
@@ -23,38 +27,57 @@ func main() {
 	args := os.Args
 	if len(args) <= 1 {
 		log.Fatal("File is required")
+		os.Exit(1)
 	}
 
 	file, err := os.Open(args[len(args)-1])
 	if err != nil {
 		log.Fatal(err)
+		os.Exit(1)
 	}
-	_, err = parseFile(file, false)
+	_, err = route.ParseFile(file, false)
 	if err != nil {
 		log.Fatal(err)
+		os.Exit(1)
 	}
 
 	if interfac == "rest" {
-		fmt.Println("Not implemented yet")
-		os.Exit(1)
+		restInterface()
 	} else {
-		scanner := bufio.NewScanner(os.Stdin)
-		fmt.Printf("\n>>> Please enter the route: ")
-		for scanner.Scan() {
-			input := scanner.Text()
-			if input == "" {
-				fmt.Printf("\n>>> Please enter the route: ")
-				continue
-			}
-			input = strings.ToUpper(input)
-			parts := strings.Split(input, "-")
-			results := findBestRoute(parts[0], parts[1], 1)
-			if len(results) > 0 {
-				fmt.Printf("\nBest route: %s > $%d\n", results[0].Route, results[0].Price)
-			} else {
-				fmt.Printf("\nNo route was found. Please try another route\n")
-			}
+		consoleInterface()
+	}
+}
+
+// restInterface provides the rest interface
+func restInterface() {
+	http.HandleFunc("/api/v1/routes", rest.BestRouteHandler)
+	fmt.Printf("Starting server on port %s...", port)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
+}
+
+// consoleInterface provides the default interface of this program
+func consoleInterface() {
+	scanner := bufio.NewScanner(os.Stdin)
+	fmt.Printf("\n>>> Please enter the route: ")
+	for scanner.Scan() {
+		input := scanner.Text()
+		if input == "" {
 			fmt.Printf("\n>>> Please enter the route: ")
+			continue
 		}
+		input = strings.ToUpper(input)
+		parts := strings.Split(input, "-")
+		if len(parts) != 2 {
+			fmt.Printf("\nInvalid route. Please enter a route in the pattern FROM-TO\n")
+			fmt.Printf("\n>>> Please enter the route: ")
+			continue
+		}
+		results := route.FindBestRoute(parts[0], parts[1], 1)
+		if len(results) > 0 {
+			fmt.Printf("\nBest route: %s > $%d\n", results[0].Route, results[0].Price)
+		} else {
+			fmt.Printf("\nNo route found. Please try another route\n")
+		}
+		fmt.Printf("\n>>> Please enter the route: ")
 	}
 }

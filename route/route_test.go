@@ -1,4 +1,4 @@
-package main
+package route
 
 import (
 	"bytes"
@@ -114,10 +114,10 @@ func TestFindBestRoute(t *testing.T) {
 
 	for i, tc := range testCases {
 		t.Logf("Running testCase #%d: %s...", i, tc.Name)
-		if _, err := parseFile(bytes.NewBufferString(tc.File), true); err != nil {
+		if _, err := file.Parse(bytes.NewBufferString(tc.File), true); err != nil {
 			t.Fatal(err)
 		}
-		result := findBestRoute(tc.From, tc.To, tc.Limit)
+		result := FindBestRoute(tc.From, tc.To, tc.Limit)
 		if !reflect.DeepEqual(tc.Expected, result) {
 			t.Errorf("Unexpected result:\n'%#v'\nexpected:\n'%#v'", result, tc.Expected)
 			continue

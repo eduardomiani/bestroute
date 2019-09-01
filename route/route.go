@@ -1,6 +1,7 @@
-package main
+package route
 
 import (
+	"log"
 	"sort"
 	"strconv"
 	"strings"
@@ -10,11 +11,12 @@ var parsedRoutes map[string][][]string
 
 // RouteResp represents a found Route
 type RouteResp struct {
-	Route string
-	Price int
+	Route string `json:"route"`
+	Price int    `json:"price"`
 }
 
-func findBestRoute(from, to string, limit int) []RouteResp {
+func FindBestRoute(from, to string, limit int) []RouteResp {
+	log.Printf(">>> ParsedRoutesSize: %d - params %s-%s-%d", len(parsedRoutes), from, to, limit)
 	rotas := make([]string, 0)
 	rotas = append(rotas, from)
 	rotas = find(rotas, to)

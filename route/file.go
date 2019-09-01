@@ -1,4 +1,4 @@
-package main
+package route
 
 import (
 	"encoding/csv"
@@ -11,7 +11,7 @@ import (
 // parseFile parses a routes file and returns a map of fromRoute to your respective routes matrix.
 // If there is already a parsedRoutes variable in memory, it is returned.
 // If the force flag is true, then the file is parsed anyway.
-func parseFile(file io.Reader, force bool) (map[string][][]string, error) {
+func ParseFile(file io.Reader, force bool) (map[string][][]string, error) {
 	if !force && len(parsedRoutes) > 0 {
 		fmt.Println("Using parsedRoutes cache")
 		return parsedRoutes, nil
