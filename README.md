@@ -41,6 +41,7 @@ Com isso, o binário estará disponível na raiz do projeto.
 Caso não queira instalar e configurar o Go, os binários foram disponibilizados para download nos links abaixo:
 
    - [Distribuição Linux](https://drive.google.com/open?id=1LrinL8rgqwXEBVC_ZBR72veHEHhXoqY3)
+   - [Distribuição Mac OS](https://drive.google.com/open?id=1B7YbaVl5d1YKvBviKyA-AgZgl5SeNNyk)
    - [Distribuição Windows](https://google.com)
 
 ## Execução
